@@ -1,1 +1,1 @@
-# kubectl-svcrole
+# kubectl-bndrole
