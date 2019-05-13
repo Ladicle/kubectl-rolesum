@@ -79,4 +79,4 @@ echo; echo "Binding ClusterRole..."
 kubectl create clusterrolebinding test --clusterrole edit --serviceaccount default:test-user
 
 echo; echo "Test..."
-./kubectl-bndrole test-user
+./kubectl-bindrole test-user
