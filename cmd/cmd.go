@@ -9,6 +9,7 @@ import (
 	"github.com/Ladicle/kubectl-bindrole/pkg/util/subject"
 	"github.com/spf13/pflag"
 	rbacv1 "k8s.io/api/rbac/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/client-go/kubernetes"
 )
@@ -62,17 +63,32 @@ func Execute() error {
 		return err
 	}
 
-	exp := explorer.NewPolicyExplorer(sub, client)
+	exp := explorer.NewPolicyExplorer(client)
+	nsp, err := exp.NamespacedSbjRoles(sub)
+	if err != nil {
+		return err
+	}
+	clusterp, err := exp.ClusterSbjRoles(sub)
+	if err != nil {
+		return err
+	}
 
 	pp := printer.DefaultPrettyPrinter()
-	pp.PrintSubject(exp.Subject)
-	pp.BlankLine()
-	if _, err := exp.NamespacedPolicy(); err != nil {
-		return err
+	pp.PrintSubject(sub)
+	if sub.Kind == subject.KindSA {
+		sa, err := client.CoreV1().ServiceAccounts(sub.Namespace).
+			Get(sub.Name, metav1.GetOptions{})
+		if err != nil {
+			return err
+		}
+		pp.PrintSA(sa)
 	}
+
 	pp.BlankLine()
-	if _, err := exp.ClusterPolicy(); err != nil {
-		return err
-	}
+	pp.PrintHeader("Policies")
+	pp.PrintPolicies(nsp)
+	pp.BlankLine()
+	pp.PrintPolicies(clusterp)
+
 	return nil
 }

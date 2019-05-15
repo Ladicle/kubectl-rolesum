@@ -80,3 +80,6 @@ kubectl create clusterrolebinding test --clusterrole edit --serviceaccount defau
 
 echo; echo "Test..."
 ./kubectl-bindrole test-user
+
+echo; echo "Roles via kubectl..."
+kubectl describe clusterrole edit|grep '\[\]'|sort

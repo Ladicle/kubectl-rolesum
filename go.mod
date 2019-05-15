@@ -4,7 +4,8 @@ go 1.12
 
 require (
 	github.com/logrusorgru/aurora v0.0.0-20190428105938-cea283e61946
-	github.com/spf13/cobra v0.0.0-20180319062004-c439c4fa0937
+	github.com/mattn/go-runewidth v0.0.4 // indirect
+	github.com/olekukonko/tablewriter v0.0.1
 	github.com/spf13/pflag v1.0.3
 	k8s.io/api v0.0.0-20190511023547-e63b5755afac
 	k8s.io/apimachinery v0.0.0-20190511023455-ad85901afca0
