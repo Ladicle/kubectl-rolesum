@@ -4,9 +4,9 @@ Finding Kubernetes Roles bound to a specified ServiceAccount, Group or User.
 
 ![screenshot](./img/screenshot.png)
 
-## Installation and Usage
+## Installation
 
-## for macOS
+### for macOS
 
 bindrole supports [homebrew](https://docs.brew.sh/Installation) :beer:
 
@@ -15,10 +15,12 @@ brew tap Ladicle/kubectl-bindrole
 brew install kubectl-bindrole
 ```
 
-## for other devices
+### for other devices
 
 The easiest way is to download binary from the [release page](https://github.com/Ladicle/kubectl-bindrole/releases).
 You can also download this repository and install it using Makefile.
+
+## Usage
 
 ```
 $ kubectl-bindrole -h  # or kubectl bindrole -h
