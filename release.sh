@@ -6,10 +6,12 @@ rm -r _output/ || :
 # build binary
 make build-linux
 make build-darwin
+make build-windows
 
 # compose binaries
-for dir in $(find _output/ -type d -name "kubectl-bindrole_*"); do
-  tar -zcvf $(basename $dir).tar.gz $dir
+cd _output/
+for dir in $(find . -type d -name "kubectl-bindrole_*"); do
+    tar -zcvf $dir.tar.gz $dir
 done
 
 # check sha256

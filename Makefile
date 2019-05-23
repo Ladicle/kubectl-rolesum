@@ -12,6 +12,10 @@ build-linux:
 build-darwin:
 	GO111MODULE=on GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags "-w -X $(PKGROOT)/cmd.version=$(VERSION) -X $(PKGROOT)/cmd.command=$(REPO_NAME)" -o $(OUTDIR)/kubectl-bindrole_darwin-amd64/kubectl-bindrole
 
+build-windows:
+	GO111MODULE=on GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags "-w -X $(PKGROOT)/cmd.version=$(VERSION) -X $(PKGROOT)/cmd.command=$(REPO_NAME)" -o $(OUTDIR)/kubectl-bindrole_windows-amd64/kubectl-bindrole
+
+
 install:
 	GO111MODULE=on CGO_ENABLED=0 go install -ldflags "-w -X $(PKGROOT)/cmd.version=$(VERSION) -X $(PKGROOT)/cmd.command=$(REPO_NAME)"
 check:
