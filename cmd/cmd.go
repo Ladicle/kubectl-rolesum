@@ -21,6 +21,7 @@ var (
 	// set values via build flags
 	command string
 	version string
+	commit  string
 
 	subkind string
 	verflag bool
@@ -37,7 +38,7 @@ func Execute() error {
 	pflag.Parse()
 
 	if verflag {
-		fmt.Printf("%v - %v", command, version)
+		fmt.Printf("%v - %v - %v", command, version, commit)
 		return nil
 	}
 	if pflag.NArg() != 1 {
