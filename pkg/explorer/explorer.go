@@ -33,25 +33,53 @@ type SubjectPolicyList struct {
 // NamespacedSbjRoles explores bound namespaced roles to the specified subject.
 func (e *PolicyExplorer) NamespacedSbjRoles(sbj *rbacv1.Subject) ([]*SubjectRole, error) {
 	sbjrbs, err := subjectRoleBindings(e.client, sbj)
+
 	if err != nil {
 		return nil, err
 	}
+
 	var sbjrs []*SubjectRole
+
 	for _, b := range sbjrbs {
-		role, err := e.client.RbacV1().Roles(sbj.Namespace).
-			Get(b.RoleRef.Name, metav1.GetOptions{})
-		if err != nil {
-			return nil, err
+		if b.RoleRef.Kind == "ClusterRole" {
+			role, err := e.client.RbacV1().ClusterRoles().
+				Get(b.RoleRef.Name, metav1.GetOptions{})
+
+			if err != nil {
+				return nil, err
+			}
+
+			sbjpl, err := rule2sbjpl(e.client, role.Rules)
+
+			if err != nil {
+				return nil, err
+			}
+
+			sbjrs = append(sbjrs, &SubjectRole{
+				Name:       role.Name,
+				Namespace:  role.Namespace,
+				PolicyList: sbjpl,
+			})
+		} else if b.RoleRef.Kind == "Role" {
+			role, err := e.client.RbacV1().Roles(sbj.Namespace).
+				Get(b.RoleRef.Name, metav1.GetOptions{})
+
+			if err != nil {
+				return nil, err
+			}
+
+			sbjpl, err := rule2sbjpl(e.client, role.Rules)
+
+			if err != nil {
+				return nil, err
+			}
+
+			sbjrs = append(sbjrs, &SubjectRole{
+				Name:       role.Name,
+				Namespace:  role.Namespace,
+				PolicyList: sbjpl,
+			})
 		}
-		sbjpl, err := rule2sbjpl(e.client, role.Rules)
-		if err != nil {
-			return nil, err
-		}
-		sbjrs = append(sbjrs, &SubjectRole{
-			Name:       role.Name,
-			Namespace:  role.Namespace,
-			PolicyList: sbjpl,
-		})
 	}
 	return sbjrs, nil
 }
