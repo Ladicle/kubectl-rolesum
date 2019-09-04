@@ -1,6 +1,6 @@
 REPO_NAME=kubectl-bindrole
 PKGROOT=github.com/Ladicle/kubectl-bindrole
-VERSION ?= $(shell git describe --abbrev=0 --tags)
+VERSION ?= $(shell git describe --abbrev=0 --tags 2>/dev/null || echo no-version)
 GIT_COMMIT := $(shell git rev-parse --short HEAD)
 OUTDIR=_output
 
