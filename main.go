@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/Ladicle/kubectl-bindrole/cmd"
-	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 )
 
 func main() {
