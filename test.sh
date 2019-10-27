@@ -1,24 +1,5 @@
 #!/bin/bash -eu
 
-echo "Building binary..."
-go build
-
-minikubeStatus=$(sudo sudo minikube status|grep Running|wc -l)
-if [ $minikubeStatus != 3 ]; then
-    echo "minikube is not running :("
-    exit 1
-fi
-
-function cleanup() {
-    echo; echo "Cleaning up!"
-    kubectl delete sa test-user || :
-    kubectl delete psp test-psp || :
-    kubectl delete role test-role || :
-    kubectl delete rolebinding test || :
-    kubectl delete clusterrolebinding test || :
-}
-trap cleanup EXIT
-
 echo; echo "Creating ServiceAccount..."
 kubectl create sa test-user
 
@@ -79,7 +60,4 @@ echo; echo "Binding ClusterRole..."
 kubectl create clusterrolebinding test --clusterrole edit --serviceaccount default:test-user
 
 echo; echo "Test..."
-./kubectl-bindrole test-user
-
-echo; echo "Roles via kubectl..."
-kubectl describe clusterrole edit|grep '\[\]'|sort
+./_output/kubectl-bindrole test-user

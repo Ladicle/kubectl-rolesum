@@ -19,9 +19,10 @@ build-windows:
 
 install:
 	GO111MODULE=on CGO_ENABLED=0 go install -ldflags "-w -X $(PKGROOT)/cmd.version=$(VERSION) -X $(PKGROOT)/cmd.command=$(REPO_NAME) -X $(PKGROOT)/cmd.commit=$(GIT_COMMIT)"
+
 check:
 	GO111MODULE=on go vet $(PKGROOT)/...
-	./test
+	./test.sh
 
 .PHONY: clean
 clean:
