@@ -5,7 +5,7 @@ kubectl create sa test-user
 
 echo; echo "Creating PSP..."
 cat <<EOF | kubectl apply -f -
-apiVersion: extensions/v1beta1
+apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
   name: test-psp
