@@ -7,11 +7,12 @@ import (
 	// Initialize all known client auth plugins.
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
-	"github.com/spf13/pflag"
+	"github.com/spf13/cobra"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
-	"k8s.io/client-go/kubernetes"
+	cmdutil "k8s.io/kubectl/pkg/cmd/util"
+	"k8s.io/kubectl/pkg/util/templates"
 
 	"github.com/Ladicle/kubectl-bindrole/pkg/explorer"
 	"github.com/Ladicle/kubectl-bindrole/pkg/util/printer"
@@ -23,35 +24,65 @@ var (
 	command string
 	version string
 	commit  string
-
-	subkind string
-	verflag bool
 )
 
-func Execute() error {
-	fsets := pflag.CommandLine
-	fsets.StringVarP(&subkind, "subject-kind", "k", subject.KindSA,
-		"The Kind of subject which is bound Roles.")
-	fsets.BoolVarP(&verflag, "version", "v", false, "Print command version")
+type Option struct {
+	SubjectKind string
+	SubjectName string
+
+	f cmdutil.Factory
+}
+
+func NewBindroleCmd() *cobra.Command {
+	opt := Option{}
+	cmd := &cobra.Command{
+		Use:                   fmt.Sprintf("%s <SubjectName>", command),
+		Version:               fmt.Sprintf("%v @%v", version, commit),
+		DisableFlagsInUseLine: true,
+		Short:                 "Summarize RBAC roles tied to the given subject",
+		Long:                  templates.LongDesc("Summarize RBAC roles tied to the given subject"),
+		Example: templates.Examples(fmt.Sprintf(`# Summarize roles tied to the "ci-bot" ServiceAccount.
+%s ci-bot
+
+# Summarize roles tied to the "developer" Group.
+%s developer -k Group`, command, command)),
+		Run: func(cmd *cobra.Command, args []string) {
+			cmdutil.CheckErr(opt.Validate(cmd, args))
+			cmdutil.CheckErr(opt.Run())
+		},
+	}
+
+	templates.ActsAsRootCommand(cmd, []string{"options"})
+
+	fsets := cmd.PersistentFlags()
 	cfgFlags := genericclioptions.NewConfigFlags(true)
 	cfgFlags.AddFlags(fsets)
+	matchVersionFlags := cmdutil.NewMatchVersionFlags(cfgFlags)
+	matchVersionFlags.AddFlags(fsets)
 
-	pflag.Parse()
+	opt.f = cmdutil.NewFactory(matchVersionFlags)
 
-	if verflag {
-		fmt.Printf("%v - %v - %v", command, version, commit)
-		return nil
-	}
-	if pflag.NArg() != 1 {
+	cmd.Flags().StringVarP(&opt.SubjectKind, "subject-kind", "k", subject.KindSA,
+		fmt.Sprintf("subject kind (available: %s, %s or %s)", subject.KindSA, subject.KindGroup, subject.KindUser))
+
+	return cmd
+}
+
+func (o *Option) Validate(cmd *cobra.Command, args []string) error {
+	if len(args) == 0 {
 		return errors.New("subject name is required")
 	}
+	o.SubjectName = args[0]
+	return nil
+}
 
+func (o *Option) Run() error {
 	sub := &rbacv1.Subject{
-		Name: pflag.Arg(0),
-		Kind: subkind,
+		Name: o.SubjectName,
+		Kind: o.SubjectKind,
 	}
 	if sub.Kind == subject.KindSA {
-		k8sCfg := cfgFlags.ToRawKubeConfigLoader()
+		k8sCfg := o.f.ToRawKubeConfigLoader()
 		ns, _, err := k8sCfg.Namespace()
 		if err != nil {
 			return err
@@ -59,11 +90,7 @@ func Execute() error {
 		sub.Namespace = ns
 	}
 
-	cfg, err := cfgFlags.ToRESTConfig()
-	if err != nil {
-		return err
-	}
-	client, err := kubernetes.NewForConfig(cfg)
+	client, err := o.f.KubernetesClientSet()
 	if err != nil {
 		return err
 	}
