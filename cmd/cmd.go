@@ -4,17 +4,18 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Ladicle/kubectl-bindrole/pkg/explorer"
-	"github.com/Ladicle/kubectl-bindrole/pkg/util/printer"
-	"github.com/Ladicle/kubectl-bindrole/pkg/util/subject"
+	// Initialize all known client auth plugins.
+	_ "k8s.io/client-go/plugin/pkg/client/auth"
+
 	"github.com/spf13/pflag"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/client-go/kubernetes"
 
-	// Initialize all known client auth plugins.
-	_ "k8s.io/client-go/plugin/pkg/client/auth"
+	"github.com/Ladicle/kubectl-bindrole/pkg/explorer"
+	"github.com/Ladicle/kubectl-bindrole/pkg/util/printer"
+	"github.com/Ladicle/kubectl-bindrole/pkg/util/subject"
 )
 
 var (
