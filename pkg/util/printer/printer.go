@@ -5,13 +5,14 @@ import (
 	"io"
 	"os"
 
-	"github.com/Ladicle/kubectl-bindrole/pkg/explorer"
-	"github.com/Ladicle/kubectl-bindrole/pkg/util/subject"
 	"github.com/logrusorgru/aurora"
 	"github.com/olekukonko/tablewriter"
 	core "k8s.io/api/core/v1"
 	policy "k8s.io/api/policy/v1beta1"
 	rbac "k8s.io/api/rbac/v1"
+
+	"github.com/Ladicle/kubectl-bindrole/pkg/explorer"
+	"github.com/Ladicle/kubectl-bindrole/pkg/util/subject"
 )
 
 type PrettyPrinter struct {
