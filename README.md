@@ -1,6 +1,6 @@
 # kubectl-bindrole
 
-Finding Kubernetes Roles bound to a specified ServiceAccount, Group or User.
+Summarize RBAC roles tied to the given subject.
 
 ![screenshot](./img/screenshot.png)
 
@@ -22,27 +22,25 @@ You can also download this repository and install it using Makefile.
 
 ## Usage
 
-```
-$ kubectl-bindrole -h  # or kubectl bindrole -h
+```bash
+$ kubectl bindrole -h  # or kubectl-bindrole -h
+Summarize RBAC roles tied to the given subject
 
-Usage of kubectl-bindrole:
-      --as string                      Username to impersonate for the operation
-      --as-group stringArray           Group to impersonate for the operation, this flag can be repeated to specify multiple groups.
-      --cache-dir string               Default HTTP cache directory (default "/home/ladicle/.kube/http-cache")
-      --certificate-authority string   Path to a cert file for the certificate authority
-      --client-certificate string      Path to a client certificate file for TLS
-      --client-key string              Path to a client key file for TLS
-      --cluster string                 The name of the kubeconfig cluster to use
-      --context string                 The name of the kubeconfig context to use
-      --insecure-skip-tls-verify       If true, the server's certificate will not be checked for validity. This will make your HTTPS connections insecure
-      --kubeconfig string              Path to the kubeconfig file to use for CLI requests.
-  -n, --namespace string               If present, the namespace scope for this CLI request
-      --request-timeout string         The length of time to wait before giving up on a single server request. Non-zero values should contain a corresponding time unit (e.g. 1s, 2m, 3h). A value of zero means don't timeout requests. (default "0")
-  -s, --server string                  The address and port of the Kubernetes API server
-  -k, --subject-kind string            The Kind of subject which is bound Roles. (default "ServiceAccount")
-      --token string                   Bearer token for authentication to the API server
-      --user string                    The name of the kubeconfig user to use
-  -v, --version                        Print command version
+Examples:
+  # Summarize roles tied to the "ci-bot" ServiceAccount.
+  kubectl-bindrole ci-bot
+
+  # Summarize roles tied to the "developer" Group.
+  kubectl-bindrole developer -k Group
+
+Options:
+  -k, --subject-kind='ServiceAccount': subject kind (available: ServiceAccount, Group or User)
+      --version=false: version for kubectl-bindrole
+
+Usage:
+  kubectl-bindrole <SubjectName> [options]
+
+Use "kubectl-bindrole options" for a list of global command-line options (applies to all commands).
 ```
 
-This command works both as a kubectl plugin and as a standalone.
+This command supports both kubectl-plugin mode and standalone mode.
