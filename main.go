@@ -1,15 +1,18 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"github.com/spf13/pflag"
 
 	"github.com/Ladicle/kubectl-bindrole/cmd"
+	cmdutil "github.com/Ladicle/kubectl-bindrole/pkg/util/cmd"
 )
+
+func init() {
+	flags := pflag.NewFlagSet("kubectl-bindrole", pflag.ExitOnError)
+	pflag.CommandLine = flags
+}
 
 func main() {
 	command := cmd.NewBindroleCmd()
-	if err := command.Execute(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v", err)
-	}
+	cmdutil.CheckErr(command.Execute())
 }

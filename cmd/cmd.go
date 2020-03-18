@@ -3,18 +3,22 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	// Initialize all known client auth plugins.
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
+	"github.com/logrusorgru/aurora"
 	"github.com/spf13/cobra"
 	rbacv1 "k8s.io/api/rbac/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	cmdutil "k8s.io/kubectl/pkg/cmd/util"
 	"k8s.io/kubectl/pkg/util/templates"
 
 	"github.com/Ladicle/kubectl-bindrole/pkg/explorer"
+	brcmdutil "github.com/Ladicle/kubectl-bindrole/pkg/util/cmd"
 	"github.com/Ladicle/kubectl-bindrole/pkg/util/printer"
 	"github.com/Ladicle/kubectl-bindrole/pkg/util/subject"
 )
@@ -24,11 +28,20 @@ var (
 	command string
 	version string
 	commit  string
+
+	bindroleExample = fmt.Sprintf(`%v
+kubectl bindrole ci-bot
+
+%v
+kubectl bindrole -k Group developer`,
+		aurora.BrightBlack("# Summarize roles tied to the \"ci-bot\" ServiceAccount."),
+		aurora.BrightBlack("# Summarize roles tied to the \"developer\" Group."))
 )
 
 type Option struct {
-	SubjectKind string
-	SubjectName string
+	SubjectKind    string
+	SubjectName    string
+	ShowOptionFlag bool
 
 	f cmdutil.Factory
 }
@@ -36,23 +49,23 @@ type Option struct {
 func NewBindroleCmd() *cobra.Command {
 	opt := Option{}
 	cmd := &cobra.Command{
-		Use:                   fmt.Sprintf("%s <SubjectName>", command),
-		Version:               fmt.Sprintf("%v @%v", version, commit),
+		Use: fmt.Sprintf("bindrole [options] <%v>",
+			aurora.Yellow("SubjectName")),
+		Version:               version,
 		DisableFlagsInUseLine: true,
+		SilenceUsage:          true,
+		SilenceErrors:         true,
 		Short:                 "Summarize RBAC roles for the specified subject",
-		Long:                  templates.LongDesc("Summarize RBAC roles for the specified subject"),
-		Example: templates.Examples(fmt.Sprintf(`# Summarize roles tied to the "ci-bot" ServiceAccount.
-%s ci-bot
-
-# Summarize roles tied to the "developer" Group.
-%s developer -k Group`, command, command)),
+		Long:                  "Summarize RBAC roles for the specified subject",
+		Example:               templates.Examples(bindroleExample),
 		Run: func(cmd *cobra.Command, args []string) {
-			cmdutil.CheckErr(opt.Validate(cmd, args))
-			cmdutil.CheckErr(opt.Run())
+			brcmdutil.CheckErr(opt.Validate(cmd, args))
+			brcmdutil.CheckErr(opt.Run())
 		},
 	}
 
-	templates.ActsAsRootCommand(cmd, []string{"options"})
+	cmd.SetVersionTemplate(brcmdutil.VersionTemplate)
+	cmd.SetUsageTemplate(brcmdutil.UsageTemplate)
 
 	fsets := cmd.PersistentFlags()
 	cfgFlags := genericclioptions.NewConfigFlags(true)
@@ -62,17 +75,31 @@ func NewBindroleCmd() *cobra.Command {
 
 	opt.f = cmdutil.NewFactory(matchVersionFlags)
 
-	cmd.Flags().StringVarP(&opt.SubjectKind, "subject-kind", "k", subject.KindSA,
-		fmt.Sprintf("subject kind (available: %s, %s or %s)", subject.KindSA, subject.KindGroup, subject.KindUser))
+	cmd.Flags().StringVarP(&opt.SubjectKind, "subject-kind", "k", subject.KindSA, "Set SubjectKind to summarize")
+	cmd.Flags().BoolVarP(&opt.ShowOptionFlag, "options", "o", false, "List of all options for this command")
 
 	return cmd
 }
 
 func (o *Option) Validate(cmd *cobra.Command, args []string) error {
+	if o.ShowOptionFlag {
+		cmd.SetUsageTemplate(brcmdutil.OptionTemplate)
+		fmt.Println(cmd.UsageString())
+		os.Exit(0)
+	}
+
 	if len(args) == 0 {
-		return errors.New("subject name is required")
+		return errors.New(fmt.Sprintf("<%v> is required argument",
+			aurora.Cyan("SubjectName").Bold()))
 	}
 	o.SubjectName = args[0]
+
+	switch o.SubjectKind {
+	case subject.KindGroup, subject.KindSA, subject.KindUser:
+	default:
+		return errors.New(fmt.Sprintf("\"%v\" is unknown SubjectKind",
+			aurora.Cyan(o.SubjectKind).Bold()))
+	}
 	return nil
 }
 
@@ -106,14 +133,20 @@ func (o *Option) Run() error {
 	}
 
 	pp := printer.DefaultPrettyPrinter()
-	pp.PrintSubject(sub)
+
 	if sub.Kind == subject.KindSA {
 		sa, err := client.CoreV1().ServiceAccounts(sub.Namespace).
 			Get(sub.Name, metav1.GetOptions{})
-		if err != nil {
+		if apierrors.IsNotFound(err) {
+			return errors.New(fmt.Sprintf("ServiceAccount \"%v\" not found",
+				aurora.Cyan(fmt.Sprintf("%v/%v", sub.Namespace, sub.Name)).Bold()))
+		} else if err != nil {
 			return err
 		}
+		pp.PrintSubject(sub)
 		pp.PrintSA(sa)
+	} else {
+		pp.PrintSubject(sub)
 	}
 
 	pp.BlankLine()

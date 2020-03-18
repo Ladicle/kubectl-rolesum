@@ -25,21 +25,29 @@ You can also download this repository and install it using Makefile.
 $ kubectl bindrole -h  # or kubectl-bindrole -h
 Summarize RBAC roles for the specified subject
 
+Usage:
+  kubectl bindrole [options] <SubjectName>
+
 Examples:
   # Summarize roles tied to the "ci-bot" ServiceAccount.
-  kubectl-bindrole ci-bot
+  kubectl bindrole ci-bot
 
   # Summarize roles tied to the "developer" Group.
-  kubectl-bindrole developer -k Group
+  kubectl bindrole -k Group developer
+
+SubjectKinds:
+  - ServiceAccount (default)
+  - User
+  - Group
 
 Options:
-  -k, --subject-kind='ServiceAccount': subject kind (available: ServiceAccount, Group or User)
-      --version=false: version for kubectl-bindrole
+  -h, --help                   Display this help message
+  -n, --namespace string       Change the namespace scope for this CLI request
+  -k, --subject-kind string    Set SubjectKind to summarize (default: ServiceAccount)
+  -o, --options                List of all options for this command
+      --version                Show version for this command
 
-Usage:
-  kubectl-bindrole <SubjectName> [options]
-
-Use "kubectl-bindrole options" for a list of global command-line options (applies to all commands).
+Use "kubectl bindrole --options" for a list of all options (applies to this command).
 ```
 
 This command supports both kubectl-plugin mode and standalone mode.
