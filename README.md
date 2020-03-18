@@ -11,8 +11,7 @@ Summarize RBAC roles for the specified subject (ServiceAccount, User and Group).
 bindrole supports [homebrew](https://docs.brew.sh/Installation) :beer:
 
 ```
-brew tap Ladicle/kubectl-bindrole
-brew install kubectl-bindrole
+brew install Ladicle/kubectl-bindrole/kubectl-bindrole
 ```
 
 ### for other devices
