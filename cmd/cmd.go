@@ -39,8 +39,8 @@ func NewBindroleCmd() *cobra.Command {
 		Use:                   fmt.Sprintf("%s <SubjectName>", command),
 		Version:               fmt.Sprintf("%v @%v", version, commit),
 		DisableFlagsInUseLine: true,
-		Short:                 "Summarize RBAC roles tied to the given subject",
-		Long:                  templates.LongDesc("Summarize RBAC roles tied to the given subject"),
+		Short:                 "Summarize RBAC roles for the specified subject",
+		Long:                  templates.LongDesc("Summarize RBAC roles for the specified subject"),
 		Example: templates.Examples(fmt.Sprintf(`# Summarize roles tied to the "ci-bot" ServiceAccount.
 %s ci-bot
 

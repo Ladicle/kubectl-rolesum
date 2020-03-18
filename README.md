@@ -1,6 +1,6 @@
 # kubectl-bindrole
 
-Summarize RBAC roles tied to the given subject.
+Summarize RBAC roles for the specified subject (ServiceAccount, User and Group).
 
 ![screenshot](./img/screenshot.png)
 
@@ -24,7 +24,7 @@ You can also download this repository and install it using Makefile.
 
 ```bash
 $ kubectl bindrole -h  # or kubectl-bindrole -h
-Summarize RBAC roles tied to the given subject
+Summarize RBAC roles for the specified subject
 
 Examples:
   # Summarize roles tied to the "ci-bot" ServiceAccount.
