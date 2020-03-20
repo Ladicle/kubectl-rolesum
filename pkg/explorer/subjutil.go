@@ -5,7 +5,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/Ladicle/kubectl-bindrole/pkg/util/subject"
+	"github.com/Ladicle/kubectl-rolesum/pkg/util/subject"
 )
 
 // subjectRoles retrieve RoleBindings for the specified subject.

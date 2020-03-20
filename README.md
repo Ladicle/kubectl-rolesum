@@ -1,6 +1,8 @@
-# kubectl-bindrole
+# kubectl-rolesum
 
 Summarize RBAC roles for the specified subject (ServiceAccount, User and Group).
+
+:warning: **kubectl-bindrole is renamed to kubectl-rolesum.**
 
 ![screenshot](./img/screenshot.png)
 
@@ -8,32 +10,32 @@ Summarize RBAC roles for the specified subject (ServiceAccount, User and Group).
 
 ### for macOS
 
-bindrole supports [homebrew](https://docs.brew.sh/Installation) :beer:
+rolesum supports [homebrew](https://docs.brew.sh/Installation) :beer:
 
 ```
-brew install Ladicle/kubectl-bindrole/kubectl-bindrole
+brew install Ladicle/kubectl-rolesum/kubectl-rolesum
 ```
 
 ### for other devices
 
-The easiest way is to download binary from the [release page](https://github.com/Ladicle/kubectl-bindrole/releases).
+The easiest way is to download binary from the [release page](https://github.com/Ladicle/kubectl-rolesum/releases).
 You can also download this repository and install it using Makefile.
 
 ## Usage
 
 ```bash
-$ kubectl bindrole -h  # or kubectl-bindrole -h
+$ kubectl rolesum -h  # or kubectl-rolesum -h
 Summarize RBAC roles for the specified subject
 
 Usage:
-  kubectl bindrole [options] <SubjectName>
+  kubectl rolesum [options] <SubjectName>
 
 Examples:
-  # Summarize roles tied to the "ci-bot" ServiceAccount.
-  kubectl bindrole ci-bot
+  # Summarize roles bound to the "ci-bot" ServiceAccount.
+  kubectl rolesum ci-bot
 
-  # Summarize roles tied to the "developer" Group.
-  kubectl bindrole -k Group developer
+  # Summarize roles bound to the "developer" Group.
+  kubectl rolesum -k Group developer
 
 SubjectKinds:
   - ServiceAccount (default)
@@ -47,7 +49,7 @@ Options:
   -o, --options                List of all options for this command
       --version                Show version for this command
 
-Use "kubectl bindrole --options" for a list of all options (applies to this command).
+Use "kubectl rolesum --options" for a list of all options (applies to this command).
 ```
 
 This command supports both kubectl-plugin mode and standalone mode.

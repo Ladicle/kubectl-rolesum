@@ -17,10 +17,10 @@ import (
 	cmdutil "k8s.io/kubectl/pkg/cmd/util"
 	"k8s.io/kubectl/pkg/util/templates"
 
-	"github.com/Ladicle/kubectl-bindrole/pkg/explorer"
-	brcmdutil "github.com/Ladicle/kubectl-bindrole/pkg/util/cmd"
-	"github.com/Ladicle/kubectl-bindrole/pkg/util/printer"
-	"github.com/Ladicle/kubectl-bindrole/pkg/util/subject"
+	"github.com/Ladicle/kubectl-rolesum/pkg/explorer"
+	brcmdutil "github.com/Ladicle/kubectl-rolesum/pkg/util/cmd"
+	"github.com/Ladicle/kubectl-rolesum/pkg/util/printer"
+	"github.com/Ladicle/kubectl-rolesum/pkg/util/subject"
 )
 
 var (
@@ -29,13 +29,13 @@ var (
 	version string
 	commit  string
 
-	bindroleExample = fmt.Sprintf(`%v
-kubectl bindrole ci-bot
+	rolesumExample = fmt.Sprintf(`%v
+kubectl rolesum ci-bot
 
 %v
-kubectl bindrole -k Group developer`,
-		aurora.BrightBlack("# Summarize roles tied to the \"ci-bot\" ServiceAccount."),
-		aurora.BrightBlack("# Summarize roles tied to the \"developer\" Group."))
+kubectl rolesum -k Group developer`,
+		aurora.BrightBlack("# Summarize roles bound to the \"ci-bot\" ServiceAccount."),
+		aurora.BrightBlack("# Summarize roles bound to the \"developer\" Group."))
 )
 
 type Option struct {
@@ -46,10 +46,10 @@ type Option struct {
 	f cmdutil.Factory
 }
 
-func NewBindroleCmd() *cobra.Command {
+func NewRolesumCmd() *cobra.Command {
 	opt := Option{}
 	cmd := &cobra.Command{
-		Use: fmt.Sprintf("bindrole [options] <%v>",
+		Use: fmt.Sprintf("rolesum [options] <%v>",
 			aurora.Yellow("SubjectName")),
 		Version:               version,
 		DisableFlagsInUseLine: true,
@@ -57,7 +57,7 @@ func NewBindroleCmd() *cobra.Command {
 		SilenceErrors:         true,
 		Short:                 "Summarize RBAC roles for the specified subject",
 		Long:                  "Summarize RBAC roles for the specified subject",
-		Example:               templates.Examples(bindroleExample),
+		Example:               templates.Examples(rolesumExample),
 		Run: func(cmd *cobra.Command, args []string) {
 			brcmdutil.CheckErr(opt.Validate(cmd, args))
 			brcmdutil.CheckErr(opt.Run())

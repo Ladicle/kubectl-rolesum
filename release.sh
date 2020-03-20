@@ -10,7 +10,7 @@ make build-windows
 
 # compose binaries
 cd _output/
-for dir in $(find . -type d -name "kubectl-bindrole_*"); do
+for dir in $(find . -type d -name "kubectl-rolesum_*"); do
     cp ../LICENSE $dir
     tar -zcvf $dir.tar.gz $dir
 done

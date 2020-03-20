@@ -31,7 +31,7 @@ Available Commands:{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "he
   -o, --options                List of all options for this command
       --version                Show version for this command
 
-Use "kubectl bindrole --options" for a list of all options (applies to this command).
+Use "kubectl rolesum --options" for a list of all options (applies to this command).
 `,
 	aurora.Cyan("Usage"),
 	aurora.Cyan("Aliases"),

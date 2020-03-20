@@ -1,4 +1,4 @@
-name: "Test kubectl-bindrole using KinD"
+name: "Test kubectl-rolesum using KinD"
 on: [pull_request, push]
 jobs:
   kind:
@@ -6,7 +6,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - uses: engineerd/setup-kind@v0.1.0
-    - name: Build kubectl-bindrole
+    - name: Build kubectl-rolesum
       run: make build
     - name: Run test.sh
       run: |
