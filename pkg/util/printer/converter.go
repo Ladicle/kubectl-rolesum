@@ -5,10 +5,10 @@ import (
 	"strings"
 
 	"github.com/logrusorgru/aurora"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/api/policy/v1beta1"
 
-	"github.com/Ladicle/kubectl-bindrole/pkg/explorer"
+	"github.com/Ladicle/kubectl-rolesum/pkg/explorer"
 )
 
 const (

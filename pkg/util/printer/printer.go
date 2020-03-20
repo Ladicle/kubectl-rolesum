@@ -11,8 +11,8 @@ import (
 	policy "k8s.io/api/policy/v1beta1"
 	rbac "k8s.io/api/rbac/v1"
 
-	"github.com/Ladicle/kubectl-bindrole/pkg/explorer"
-	"github.com/Ladicle/kubectl-bindrole/pkg/util/subject"
+	"github.com/Ladicle/kubectl-rolesum/pkg/explorer"
+	"github.com/Ladicle/kubectl-rolesum/pkg/util/subject"
 )
 
 type PrettyPrinter struct {
@@ -42,7 +42,7 @@ func (p *PrettyPrinter) PrintSA(sa *core.ServiceAccount) {
 	}
 }
 
-func (p *PrettyPrinter) PrintBindRoles(sbjrs []*explorer.SubjectRole) {
+func (p *PrettyPrinter) PrintRolesums(sbjrs []*explorer.SubjectRole) {
 	for _, r := range sbjrs {
 		fmt.Fprintf(p.out, "%v %v/%v\n", bullet, blank2Asterisk(r.Namespace), r.Name)
 	}

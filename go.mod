@@ -1,4 +1,4 @@
-module github.com/Ladicle/kubectl-bindrole
+module github.com/Ladicle/kubectl-rolesum
 
 go 1.12
 

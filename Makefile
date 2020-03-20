@@ -1,6 +1,6 @@
-PKGROOT=github.com/Ladicle/kubectl-bindrole
+PKGROOT=github.com/Ladicle/kubectl-rolesum
 
-CMD=kubectl-bindrole
+CMD=kubectl-rolesum
 VERSION ?= $(shell git describe --abbrev=0 --tags 2>/dev/null || echo no-version)
 GIT_COMMIT := $(shell git rev-parse --short HEAD)
 

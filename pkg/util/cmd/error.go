@@ -12,6 +12,6 @@ func CheckErr(err error) {
 		return
 	}
 	fmt.Fprintf(os.Stderr, " %v Error: %v.\n", aurora.Red(">"), err)
-	fmt.Fprintf(os.Stderr, " %v Run %v command for the usage.\n", aurora.Red(">"), aurora.Yellow("kubectl bindrole -h"))
+	fmt.Fprintf(os.Stderr, " %v Run %v command for the usage.\n", aurora.Red(">"), aurora.Yellow("kubectl rolesum -h"))
 	os.Exit(1)
 }
