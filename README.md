@@ -13,7 +13,7 @@ Summarize RBAC roles for the specified subject (ServiceAccount, User and Group).
 rolesum supports [homebrew](https://docs.brew.sh/Installation) :beer:
 
 ```
-brew install Ladicle/kubectl-rolesum/kubectl-rolesum
+brew install Ladicle/kubectl-bindrole/kubectl-rolesum
 ```
 
 ### for other devices
