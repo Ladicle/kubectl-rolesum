@@ -26,7 +26,7 @@ build-darwin:
 
 build-windows:
 	GOOS=windows GOARCH=amd64 CGO_ENABLED=0 \
-	go build -ldflags "$(GOLDFLAGS)" -o $(OUTDIR)/$(CMD)_windows-amd64/$(CMD)
+	go build -ldflags "$(GOLDFLAGS)" -o $(OUTDIR)/$(CMD)_windows-amd64/$(CMD).exe
 
 install:
 	CGO_ENABLED=0 go install -ldflags "$(GOLDFLAGS)"
