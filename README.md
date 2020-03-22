@@ -1,22 +1,29 @@
-# kubectl-rolesum
+# kubectl-rolesum (ex-bindrole)
 
 Summarize RBAC roles for the specified subject (ServiceAccount, User and Group).
-
-:warning: **kubectl-bindrole is renamed to kubectl-rolesum.**
 
 ![screenshot](./img/screenshot.png)
 
 ## Installation
 
-### for macOS
+### krew
+
+[krew](https://github.com/kubernetes-sigs/krew) is a package manager for k8s plugins.
+Please see [krew document](https://github.com/kubernetes-sigs/krew) for more detail.
+
+```bash
+kubectl krew install rolesum
+```
+
+### Homebrew (for MacOS)
 
 rolesum supports [homebrew](https://docs.brew.sh/Installation) :beer:
 
-```
+```bash
 brew install Ladicle/kubectl-bindrole/kubectl-rolesum
 ```
 
-### for other devices
+### Binaries
 
 The easiest way is to download binary from the [release page](https://github.com/Ladicle/kubectl-rolesum/releases).
 You can also download this repository and install it using Makefile.
