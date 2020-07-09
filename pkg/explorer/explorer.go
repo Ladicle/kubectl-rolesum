@@ -20,9 +20,13 @@ func NewPolicyExplorer(client *kubernetes.Clientset) *PolicyExplorer {
 }
 
 type SubjectRole struct {
-	Name       string
-	Namespace  string
-	PolicyList *SubjectPolicyList
+	BindingName      string
+	BindingNamespace string
+	BindingType      string
+	Name             string
+	Namespace        string
+	Type             string
+	PolicyList       *SubjectPolicyList
 }
 
 type SubjectPolicyList struct {
@@ -56,9 +60,13 @@ func (e *PolicyExplorer) NamespacedSbjRoles(sbj *rbacv1.Subject) ([]*SubjectRole
 			}
 
 			sbjrs = append(sbjrs, &SubjectRole{
-				Name:       role.Name,
-				Namespace:  role.Namespace,
-				PolicyList: sbjpl,
+				BindingName:      b.Name,
+				BindingNamespace: b.Namespace,
+				BindingType:      "RB",
+				Name:             role.Name,
+				Namespace:        role.Namespace,
+				Type:             "CR",
+				PolicyList:       sbjpl,
 			})
 		} else if b.RoleRef.Kind == "Role" {
 			role, err := e.client.RbacV1().Roles(sbj.Namespace).
@@ -75,9 +83,13 @@ func (e *PolicyExplorer) NamespacedSbjRoles(sbj *rbacv1.Subject) ([]*SubjectRole
 			}
 
 			sbjrs = append(sbjrs, &SubjectRole{
-				Name:       role.Name,
-				Namespace:  role.Namespace,
-				PolicyList: sbjpl,
+				BindingName:      b.Name,
+				BindingNamespace: b.Namespace,
+				BindingType:      "RB",
+				Name:             role.Name,
+				Namespace:        role.Namespace,
+				Type:             "R",
+				PolicyList:       sbjpl,
 			})
 		}
 	}
@@ -102,9 +114,13 @@ func (e *PolicyExplorer) ClusterSbjRoles(sbj *rbacv1.Subject) ([]*SubjectRole, e
 			return nil, err
 		}
 		sbjrs = append(sbjrs, &SubjectRole{
-			Name:       role.Name,
-			Namespace:  role.Namespace,
-			PolicyList: sbjpl,
+			BindingName:      b.Name,
+			BindingNamespace: b.Namespace,
+			BindingType:      "CRB",
+			Name:             role.Name,
+			Namespace:        role.Namespace,
+			Type:             "CR",
+			PolicyList:       sbjpl,
 		})
 	}
 	return sbjrs, nil

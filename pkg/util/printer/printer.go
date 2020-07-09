@@ -53,8 +53,12 @@ func (p *PrettyPrinter) PrintPolicies(sbjrs []*explorer.SubjectRole) {
 		if i != 0 {
 			p.BlankLine()
 		}
-		fmt.Fprintf(p.out, "%v %v: %v/%v\n",
-			bullet, aurora.BrightCyan("Name"),
+		fmt.Fprintf(p.out, "%v [%v] %v/%v %v  [%v] %v/%v\n",
+			bullet,
+			aurora.BrightCyan(r.BindingType),
+			blank2Asterisk(r.BindingNamespace), r.BindingName,
+			arrow,
+			aurora.BrightCyan(r.Type),
 			blank2Asterisk(r.Namespace), r.Name)
 
 		if len(r.PolicyList.APIPolicies) != 0 {
