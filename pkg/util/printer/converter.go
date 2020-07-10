@@ -22,9 +22,11 @@ const (
 	uNG2           = "✖"
 	uCheck         = "✓"
 	uCheck2        = "✔"
+	uArrow         = "⟶"
 )
 
 var bullet = aurora.Magenta(uBullet)
+var arrow = aurora.BrightCyan(uArrow)
 
 func blank2Asterisk(s string) string {
 	if strings.TrimSpace(s) == "" {
