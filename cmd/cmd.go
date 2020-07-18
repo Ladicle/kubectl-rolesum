@@ -16,6 +16,7 @@ import (
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	cmdutil "k8s.io/kubectl/pkg/cmd/util"
 	"k8s.io/kubectl/pkg/util/templates"
+	"k8s.io/kubectl/pkg/util/term"
 
 	"github.com/Ladicle/kubectl-rolesum/pkg/explorer"
 	brcmdutil "github.com/Ladicle/kubectl-rolesum/pkg/util/cmd"
@@ -42,12 +43,17 @@ type Option struct {
 	SubjectKind    string
 	SubjectName    string
 	ShowOptionFlag bool
+	Color          bool
 
 	f cmdutil.Factory
 }
 
 func NewRolesumCmd() *cobra.Command {
 	opt := Option{}
+	streams := genericclioptions.IOStreams{
+		Out:    os.Stdout,
+		ErrOut: os.Stderr,
+	}
 	cmd := &cobra.Command{
 		Use: fmt.Sprintf("rolesum [options] <%v>",
 			aurora.Yellow("SubjectName")),
@@ -59,6 +65,7 @@ func NewRolesumCmd() *cobra.Command {
 		Long:                  "Summarize RBAC roles for the specified subject",
 		Example:               templates.Examples(rolesumExample),
 		Run: func(cmd *cobra.Command, args []string) {
+			brcmdutil.CheckErr(opt.complete(cmd, streams))
 			brcmdutil.CheckErr(opt.Validate(cmd, args))
 			brcmdutil.CheckErr(opt.Run())
 		},
@@ -77,17 +84,26 @@ func NewRolesumCmd() *cobra.Command {
 
 	cmd.Flags().StringVarP(&opt.SubjectKind, "subject-kind", "k", subject.KindSA, "Set SubjectKind to summarize")
 	cmd.Flags().BoolVarP(&opt.ShowOptionFlag, "options", "o", false, "List of all options for this command")
+	cmd.Flags().BoolVarP(&opt.Color, "color", "R", opt.Color, "Enable color output even if stdout is not a terminal")
 
 	return cmd
 }
 
-func (o *Option) Validate(cmd *cobra.Command, args []string) error {
+func (o *Option) complete(cmd *cobra.Command, streams genericclioptions.IOStreams) error {
 	if o.ShowOptionFlag {
 		cmd.SetUsageTemplate(brcmdutil.OptionTemplate)
 		fmt.Println(cmd.UsageString())
 		os.Exit(0)
 	}
 
+	tty := term.TTY{Out: streams.Out}.IsTerminalOut()
+	if tty {
+		o.Color = true
+	}
+	return nil
+}
+
+func (o *Option) Validate(cmd *cobra.Command, args []string) error {
 	if len(args) == 0 {
 		return errors.New(fmt.Sprintf("<%v> is required argument",
 			aurora.Cyan("SubjectName").Bold()))
