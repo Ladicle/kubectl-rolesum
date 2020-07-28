@@ -1,0 +1,43 @@
+before:
+  hooks:
+  - go mod download
+builds:
+- env:
+  - CGO_ENABLED=0
+  ldflags:
+  - -w
+  - -X github.com/Ladicle/kubectl-rolesum/cmd.version={{.Version}}
+  - -X github.com/Ladicle/kubectl-rolesum/cmd.commit={{.ShortCommit}}
+  - -X github.com/Ladicle/kubectl-rolesum/cmd.command=kubectl-rolesum
+  goos:
+  - linux
+  - windows
+  - darwin
+  goarch:
+  - amd64
+archives:
+- builds:
+  - kubectl-rolesum
+  name_template: "{{ .ProjectName }}_{{ .Os }}-{{ .Arch }}"
+  format: tar.gz
+  files:
+  - LICENSE
+  wrap_in_directory: true
+checksum:
+  name_template: 'checksums.txt'
+changelog:
+  sort: asc
+brews:
+- name: kubectl-rolesum
+  tap:
+    owner: Ladicle
+    name: homebrew-kubectl-bindrole
+    token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+  description: "Summarize k8s RBAC resources to specified SA, Group and User!"
+  homepage: "https://github.com/Ladicle/kubectl-rolesum"
+dockers:
+- image_templates:
+  - "ladicle/kubectl-rolesum:{{ .Tag }}"
+  - "ladicle/kubectl-rolesum:v{{ .Major }}"
+  - "ladicle/kubectl-rolesum:v{{ .Major }}.{{ .Minor }}"
+  - "ladicle/kubectl-rolesum:latest"
