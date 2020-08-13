@@ -108,6 +108,7 @@ func (o *Option) Run() error {
 		Name: o.SubjectName,
 		Kind: o.SubjectKind,
 	}
+	namespaced := false
 	if sub.Kind == subject.KindSA {
 		k8sCfg := o.f.ToRawKubeConfigLoader()
 		ns, _, err := k8sCfg.Namespace()
@@ -115,6 +116,7 @@ func (o *Option) Run() error {
 			return err
 		}
 		sub.Namespace = ns
+		namespaced = true
 	}
 
 	client, err := o.f.KubernetesClientSet()
@@ -123,9 +125,12 @@ func (o *Option) Run() error {
 	}
 
 	exp := explorer.NewPolicyExplorer(client)
-	nsp, err := exp.NamespacedSbjRoles(sub)
-	if err != nil {
-		return err
+	var nsp []*explorer.SubjectRole
+	if namespaced {
+		nsp, err = exp.NamespacedSbjRoles(sub)
+		if err != nil {
+			return err
+		}
 	}
 	clusterp, err := exp.ClusterSbjRoles(sub)
 	if err != nil {
@@ -151,8 +156,10 @@ func (o *Option) Run() error {
 
 	pp.BlankLine()
 	pp.PrintHeader("Policies")
-	pp.PrintPolicies(nsp)
-	pp.BlankLine()
+	if namespaced {
+		pp.PrintPolicies(nsp)
+		pp.BlankLine()
+	}
 	pp.PrintPolicies(clusterp)
 
 	return nil
