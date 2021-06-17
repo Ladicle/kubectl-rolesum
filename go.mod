@@ -1,6 +1,6 @@
 module github.com/Ladicle/kubectl-rolesum
 
-go 1.12
+go 1.16
 
 require (
 	github.com/logrusorgru/aurora v0.0.0-20190428105938-cea283e61946
