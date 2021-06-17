@@ -1,6 +1,8 @@
 package explorer
 
 import (
+	"context"
+
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -9,9 +11,9 @@ import (
 )
 
 // subjectRoles retrieve RoleBindings for the specified subject.
-func subjectRoleBindings(client *kubernetes.Clientset, sbj *rbacv1.Subject) ([]rbacv1.RoleBinding, error) {
+func subjectRoleBindings(ctx context.Context, client *kubernetes.Clientset, sbj *rbacv1.Subject) ([]rbacv1.RoleBinding, error) {
 	list, err := client.RbacV1().RoleBindings(sbj.Namespace).
-		List(metav1.ListOptions{})
+		List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -25,9 +27,9 @@ func subjectRoleBindings(client *kubernetes.Clientset, sbj *rbacv1.Subject) ([]r
 }
 
 // subjectClusterRoles retrieve ClusterRoleBindings for the specified subject.
-func subjectClusterRoleBindings(client *kubernetes.Clientset, sbj *rbacv1.Subject) ([]rbacv1.ClusterRoleBinding, error) {
+func subjectClusterRoleBindings(ctx context.Context, client *kubernetes.Clientset, sbj *rbacv1.Subject) ([]rbacv1.ClusterRoleBinding, error) {
 	list, err := client.RbacV1().ClusterRoleBindings().
-		List(metav1.ListOptions{})
+		List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
