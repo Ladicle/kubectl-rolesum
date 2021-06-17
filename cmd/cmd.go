@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -8,7 +9,7 @@ import (
 	// Initialize all known client auth plugins.
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
-	"github.com/logrusorgru/aurora"
+	aurora "github.com/logrusorgru/aurora/v3"
 	"github.com/spf13/cobra"
 	rbacv1 "k8s.io/api/rbac/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -104,6 +105,7 @@ func (o *Option) Validate(cmd *cobra.Command, args []string) error {
 }
 
 func (o *Option) Run() error {
+	ctx := context.Background()
 	sub := &rbacv1.Subject{
 		Name: o.SubjectName,
 		Kind: o.SubjectKind,
@@ -127,12 +129,12 @@ func (o *Option) Run() error {
 	exp := explorer.NewPolicyExplorer(client)
 	var nsp []*explorer.SubjectRole
 	if namespaced {
-		nsp, err = exp.NamespacedSbjRoles(sub)
+		nsp, err = exp.NamespacedSbjRoles(ctx, sub)
 		if err != nil {
 			return err
 		}
 	}
-	clusterp, err := exp.ClusterSbjRoles(sub)
+	clusterp, err := exp.ClusterSbjRoles(ctx, sub)
 	if err != nil {
 		return err
 	}
@@ -141,7 +143,7 @@ func (o *Option) Run() error {
 
 	if sub.Kind == subject.KindSA {
 		sa, err := client.CoreV1().ServiceAccounts(sub.Namespace).
-			Get(sub.Name, metav1.GetOptions{})
+			Get(ctx, sub.Name, metav1.GetOptions{})
 		if apierrors.IsNotFound(err) {
 			return errors.New(fmt.Sprintf("ServiceAccount \"%v\" not found",
 				aurora.Cyan(fmt.Sprintf("%v/%v", sub.Namespace, sub.Name)).Bold()))

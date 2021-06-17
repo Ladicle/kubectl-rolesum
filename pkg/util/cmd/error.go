@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/logrusorgru/aurora"
+	aurora "github.com/logrusorgru/aurora/v3"
 )
 
 func CheckErr(err error) {

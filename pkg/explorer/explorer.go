@@ -1,6 +1,7 @@
 package explorer
 
 import (
+	"context"
 	"sort"
 
 	policyv1beta1 "k8s.io/api/policy/v1beta1"
@@ -35,8 +36,8 @@ type SubjectPolicyList struct {
 }
 
 // NamespacedSbjRoles explores bound namespaced roles to the specified subject.
-func (e *PolicyExplorer) NamespacedSbjRoles(sbj *rbacv1.Subject) ([]*SubjectRole, error) {
-	sbjrbs, err := subjectRoleBindings(e.client, sbj)
+func (e *PolicyExplorer) NamespacedSbjRoles(ctx context.Context, sbj *rbacv1.Subject) ([]*SubjectRole, error) {
+	sbjrbs, err := subjectRoleBindings(ctx, e.client, sbj)
 
 	if err != nil {
 		return nil, err
@@ -47,13 +48,13 @@ func (e *PolicyExplorer) NamespacedSbjRoles(sbj *rbacv1.Subject) ([]*SubjectRole
 	for _, b := range sbjrbs {
 		if b.RoleRef.Kind == "ClusterRole" {
 			role, err := e.client.RbacV1().ClusterRoles().
-				Get(b.RoleRef.Name, metav1.GetOptions{})
+				Get(ctx, b.RoleRef.Name, metav1.GetOptions{})
 
 			if err != nil {
 				return nil, err
 			}
 
-			sbjpl, err := rule2sbjpl(e.client, role.Rules)
+			sbjpl, err := rule2sbjpl(ctx, e.client, role.Rules)
 
 			if err != nil {
 				return nil, err
@@ -70,13 +71,13 @@ func (e *PolicyExplorer) NamespacedSbjRoles(sbj *rbacv1.Subject) ([]*SubjectRole
 			})
 		} else if b.RoleRef.Kind == "Role" {
 			role, err := e.client.RbacV1().Roles(sbj.Namespace).
-				Get(b.RoleRef.Name, metav1.GetOptions{})
+				Get(ctx, b.RoleRef.Name, metav1.GetOptions{})
 
 			if err != nil {
 				return nil, err
 			}
 
-			sbjpl, err := rule2sbjpl(e.client, role.Rules)
+			sbjpl, err := rule2sbjpl(ctx, e.client, role.Rules)
 
 			if err != nil {
 				return nil, err
@@ -97,19 +98,19 @@ func (e *PolicyExplorer) NamespacedSbjRoles(sbj *rbacv1.Subject) ([]*SubjectRole
 }
 
 // ClusterSbjRoles explores bound cluster roles to the specified subject.
-func (e *PolicyExplorer) ClusterSbjRoles(sbj *rbacv1.Subject) ([]*SubjectRole, error) {
-	sbjcrbs, err := subjectClusterRoleBindings(e.client, sbj)
+func (e *PolicyExplorer) ClusterSbjRoles(ctx context.Context, sbj *rbacv1.Subject) ([]*SubjectRole, error) {
+	sbjcrbs, err := subjectClusterRoleBindings(ctx, e.client, sbj)
 	if err != nil {
 		return nil, err
 	}
 	var sbjrs []*SubjectRole
 	for _, b := range sbjcrbs {
 		role, err := e.client.RbacV1().ClusterRoles().
-			Get(b.RoleRef.Name, metav1.GetOptions{})
+			Get(ctx, b.RoleRef.Name, metav1.GetOptions{})
 		if err != nil {
 			return nil, err
 		}
-		sbjpl, err := rule2sbjpl(e.client, role.Rules)
+		sbjpl, err := rule2sbjpl(ctx, e.client, role.Rules)
 		if err != nil {
 			return nil, err
 		}
@@ -126,7 +127,7 @@ func (e *PolicyExplorer) ClusterSbjRoles(sbj *rbacv1.Subject) ([]*SubjectRole, e
 	return sbjrs, nil
 }
 
-func rule2sbjpl(client *kubernetes.Clientset, rules []rbacv1.PolicyRule) (*SubjectPolicyList, error) {
+func rule2sbjpl(ctx context.Context, client *kubernetes.Clientset, rules []rbacv1.PolicyRule) (*SubjectPolicyList, error) {
 	sbjpl := &SubjectPolicyList{
 		APIPolicies: []*ResourceAPIPolicy{},
 		PSPs:        []*policyv1beta1.PodSecurityPolicy{},
@@ -138,7 +139,7 @@ func rule2sbjpl(client *kubernetes.Clientset, rules []rbacv1.PolicyRule) (*Subje
 		if len(rule.Resources) == 1 && rule.Resources[0] == psp {
 			for _, name := range rule.ResourceNames {
 				psp, err := client.PolicyV1beta1().PodSecurityPolicies().
-					Get(name, metav1.GetOptions{})
+					Get(ctx, name, metav1.GetOptions{})
 				if err != nil {
 					return nil, err
 				}

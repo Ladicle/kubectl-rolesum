@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/logrusorgru/aurora"
+	aurora "github.com/logrusorgru/aurora/v3"
 )
 
 var UsageTemplate = fmt.Sprintf(`%v:{{if .Runnable}}

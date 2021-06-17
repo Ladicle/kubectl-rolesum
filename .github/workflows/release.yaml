@@ -23,8 +23,9 @@ jobs:
       run: |
         echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
     - name: GoReleaser
-      uses: goreleaser/goreleaser-action@v1
+      uses: goreleaser/goreleaser-action@v2
       with:
+        distribution: goreleaser
         version: latest
         args: release --rm-dist
       env:
