@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/logrusorgru/aurora"
+	aurora "github.com/logrusorgru/aurora/v3"
 	"github.com/olekukonko/tablewriter"
 	core "k8s.io/api/core/v1"
 	policy "k8s.io/api/policy/v1beta1"
