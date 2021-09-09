@@ -11,6 +11,7 @@ const (
 	VerbPatch
 	VerbDelete
 	VerbDeletionC
+	VerbAll = VerbGet | VerbList | VerbUpdate | VerbDelete | VerbDeletionC | VerbPatch | VerbCreate | VerbWatch
 )
 
 type ResourceAPIPolicy struct {
@@ -51,6 +52,8 @@ func (r *ResourceAPIPolicy) SetVerbs(verbs []string) {
 			r.APIVerbFlag |= VerbCreate
 		case "watch":
 			r.APIVerbFlag |= VerbWatch
+		case "*":
+			r.APIVerbFlag |= VerbAll
 		default:
 			r.OtherVerbs = append(r.OtherVerbs, v)
 		}
