@@ -18,6 +18,17 @@ spec:
         matchLabels:
           os: linux
           arch: amd64
+    - {{addURIAndSha "https://github.com/Ladicle/kubectl-rolesum/releases/download/{{ .TagName }}/kubectl-rolesum_linux-arm64.tar.gz" .TagName | indent 6 }}
+      bin: kubectl-rolesum
+      files:
+        - from: ./kubectl-rolesum_linux-arm64/kubectl-rolesum
+          to: "."
+        - from: ./kubectl-rolesum_linux-arm64/LICENSE
+          to: "."
+      selector:
+        matchLabels:
+          os: linux
+          arch: arm64
     - {{addURIAndSha "https://github.com/Ladicle/kubectl-rolesum/releases/download/{{ .TagName }}/kubectl-rolesum_darwin-amd64.tar.gz" .TagName | indent 6 }}
       bin: kubectl-rolesum
       files:
@@ -29,6 +40,17 @@ spec:
         matchLabels:
           os: darwin
           arch: amd64
+    - {{addURIAndSha "https://github.com/Ladicle/kubectl-rolesum/releases/download/{{ .TagName }}/kubectl-rolesum_darwin-arm64.tar.gz" .TagName | indent 6 }}
+      bin: kubectl-rolesum
+      files:
+        - from: ./kubectl-rolesum_darwin-arm64/kubectl-rolesum
+          to: "."
+        - from: ./kubectl-rolesum_darwin-arm64/LICENSE
+          to: "."
+      selector:
+        matchLabels:
+          os: darwin
+          arch: arm64
     - {{addURIAndSha "https://github.com/Ladicle/kubectl-rolesum/releases/download/{{ .TagName }}/kubectl-rolesum_windows-amd64.tar.gz" .TagName | indent 6 }}
       bin: kubectl-rolesum.exe
       files:
