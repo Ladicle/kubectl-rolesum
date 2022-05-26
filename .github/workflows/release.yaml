@@ -4,7 +4,7 @@ on:
     tags:
     - '*'
 env:
-  GO: 1.14.x
+  GO: 1.18.x
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
