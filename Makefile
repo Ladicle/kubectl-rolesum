@@ -24,6 +24,10 @@ build-darwin:
 	GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 \
 	go build -ldflags "$(GOLDFLAGS)" -o $(OUTDIR)/$(CMD)_darwin-amd64/$(CMD)
 
+build-darwin-arm:
+	GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 \
+	go build -ldflags "$(GOLDFLAGS)" -o $(OUTDIR)/$(CMD)_darwin-arm64/$(CMD)
+
 build-windows:
 	GOOS=windows GOARCH=amd64 CGO_ENABLED=0 \
 	go build -ldflags "$(GOLDFLAGS)" -o $(OUTDIR)/$(CMD)_windows-amd64/$(CMD).exe
