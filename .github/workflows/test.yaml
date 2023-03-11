@@ -1,11 +1,11 @@
 name: "Test kubectl-rolesum"
 on: [pull_request, push]
 jobs:
-  kind:
+  test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
     - name: Build kubectl-rolesum
       run: make build
-    - name: Test kubectl-rolesum
+    - name: Check kubectl-rolesum
       run: make check
