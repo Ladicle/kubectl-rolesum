@@ -10,7 +10,7 @@ GOLDFLAGS=-w -X $(PKGROOT)/cmd.version=$(VERSION) -X $(PKGROOT)/cmd.command=$(CM
 
 export GO111MODULE=on
 
-.PHONY: build build-linux build-darwin build-windows install check clean
+.PHONY: build build-linux build-darwin build-windows install check lint clean
 
 build:
 	CGO_ENABLED=0 \
@@ -35,9 +35,14 @@ build-windows:
 install:
 	CGO_ENABLED=0 go install -ldflags "$(GOLDFLAGS)"
 
-check: build
+check: lint test
+
+lint:
+	go fmt $(PKGROOT)/...
 	go vet $(PKGROOT)/...
-	./test.sh
+
+test:
+	go test -race $(PKGROOT)/...
 
 clean:
 	-rm -r $(OUTDIR)
