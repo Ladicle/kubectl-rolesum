@@ -1,4 +1,4 @@
-name: "Test kubectl-rolesum using KinD"
+name: "Test kubectl-rolesum"
 on: [pull_request, push]
 jobs:
   kind:
