@@ -73,4 +73,7 @@ echo; echo "Test..."
 echo; echo "Test[Group]..."
 ./_output/kubectl-rolesum -k Group developer
 
+echo; echo "Test[Group w/ ClusterOnly]..."
+./_output/kubectl-rolesum -k Group developer -c
+
 ./clean.sh

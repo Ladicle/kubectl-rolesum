@@ -43,6 +43,7 @@ type Option struct {
 	SubjectKind    string
 	SubjectName    string
 	ShowOptionFlag bool
+	ClusterOnly    bool
 
 	f cmdutil.Factory
 }
@@ -77,6 +78,7 @@ func NewRolesumCmd() *cobra.Command {
 	opt.f = cmdutil.NewFactory(matchVersionFlags)
 
 	cmd.Flags().StringVarP(&opt.SubjectKind, "subject-kind", "k", subject.KindSA, "Set SubjectKind to summarize")
+	cmd.Flags().BoolVarP(&opt.ClusterOnly, "cluster-only", "c", false, "Ignore namespaced Roles")
 	cmd.Flags().BoolVarP(&opt.ShowOptionFlag, "options", "o", false, "List of all options for this command")
 
 	return cmd
@@ -110,15 +112,13 @@ func (o *Option) Run() error {
 		Name: o.SubjectName,
 		Kind: o.SubjectKind,
 	}
-	namespaced := false
-	if sub.Kind == subject.KindSA {
+	if !o.ClusterOnly {
 		k8sCfg := o.f.ToRawKubeConfigLoader()
 		ns, _, err := k8sCfg.Namespace()
 		if err != nil {
 			return err
 		}
 		sub.Namespace = ns
-		namespaced = true
 	}
 
 	client, err := o.f.KubernetesClientSet()
@@ -128,7 +128,7 @@ func (o *Option) Run() error {
 
 	exp := explorer.NewPolicyExplorer(client)
 	var nsp []*explorer.SubjectRole
-	if namespaced {
+	if !o.ClusterOnly {
 		nsp, err = exp.NamespacedSbjRoles(ctx, sub)
 		if err != nil {
 			return err
@@ -158,7 +158,7 @@ func (o *Option) Run() error {
 
 	pp.BlankLine()
 	pp.PrintHeader("Policies")
-	if namespaced {
+	if !o.ClusterOnly {
 		pp.PrintPolicies(nsp)
 		pp.BlankLine()
 	}
