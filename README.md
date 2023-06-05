@@ -54,6 +54,7 @@ Options:
   -n, --namespace string       Change the namespace scope for this CLI request
   -k, --subject-kind string    Set SubjectKind to summarize (default: ServiceAccount)
   -o, --options                List of all options for this command
+  -c, --cluster-only           Ingore namespaced Roles and show only ClusterRoles
       --version                Show version for this command
 
 Use "kubectl rolesum --options" for a list of all options (applies to this command).
