@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 
@@ -26,7 +25,6 @@ import (
 
 var (
 	// set values via build flags
-	command string
 	version string
 	commit  string
 
@@ -52,7 +50,7 @@ func NewRolesumCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: fmt.Sprintf("rolesum [options] <%v>",
 			aurora.Yellow("SubjectName")),
-		Version:               version,
+		Version:               fmt.Sprintf("%v (commit %v)", version, commit),
 		DisableFlagsInUseLine: true,
 		SilenceUsage:          true,
 		SilenceErrors:         true,
@@ -90,16 +88,16 @@ func (o *Option) Validate(cmd *cobra.Command, args []string) error {
 	}
 
 	if len(args) == 0 {
-		return errors.New(fmt.Sprintf("<%v> is required argument",
-			aurora.Cyan("SubjectName").Bold()))
+		return fmt.Errorf("<%v> is required argument",
+			aurora.Cyan("SubjectName").Bold())
 	}
 	o.SubjectName = args[0]
 
 	switch o.SubjectKind {
 	case subject.KindGroup, subject.KindSA, subject.KindUser:
 	default:
-		return errors.New(fmt.Sprintf("\"%v\" is unknown SubjectKind",
-			aurora.Cyan(o.SubjectKind).Bold()))
+		return fmt.Errorf("\"%v\" is unknown SubjectKind",
+			aurora.Cyan(o.SubjectKind).Bold())
 	}
 	return nil
 }
@@ -145,8 +143,8 @@ func (o *Option) Run() error {
 		sa, err := client.CoreV1().ServiceAccounts(sub.Namespace).
 			Get(ctx, sub.Name, metav1.GetOptions{})
 		if apierrors.IsNotFound(err) {
-			return errors.New(fmt.Sprintf("ServiceAccount \"%v\" not found",
-				aurora.Cyan(fmt.Sprintf("%v/%v", sub.Namespace, sub.Name)).Bold()))
+			return fmt.Errorf("ServiceAccount \"%v\" not found",
+				aurora.Cyan(fmt.Sprintf("%v/%v", sub.Namespace, sub.Name)).Bold())
 		} else if err != nil {
 			return err
 		}

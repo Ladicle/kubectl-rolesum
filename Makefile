@@ -6,7 +6,7 @@ GIT_COMMIT := $(shell git rev-parse --short HEAD)
 
 OUTDIR=_output
 
-GOLDFLAGS=-w -X $(PKGROOT)/cmd.version=$(VERSION) -X $(PKGROOT)/cmd.command=$(CMD) -X $(PKGROOT)/cmd.commit=$(GIT_COMMIT)
+GOLDFLAGS=-w -X $(PKGROOT)/cmd.version=$(VERSION) -X $(PKGROOT)/cmd.commit=$(GIT_COMMIT)
 
 export GO111MODULE=on
 

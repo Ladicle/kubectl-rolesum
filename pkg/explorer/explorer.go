@@ -4,13 +4,10 @@ import (
 	"context"
 	"sort"
 
-	policyv1beta1 "k8s.io/api/policy/v1beta1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 )
-
-const psp = "podsecuritypolicies"
 
 type PolicyExplorer struct {
 	client *kubernetes.Clientset
@@ -32,7 +29,6 @@ type SubjectRole struct {
 
 type SubjectPolicyList struct {
 	APIPolicies []*ResourceAPIPolicy
-	PSPs        []*policyv1beta1.PodSecurityPolicy
 }
 
 // NamespacedSbjRoles explores bound namespaced roles to the specified subject.
@@ -54,7 +50,7 @@ func (e *PolicyExplorer) NamespacedSbjRoles(ctx context.Context, sbj *rbacv1.Sub
 				return nil, err
 			}
 
-			sbjpl, err := rule2sbjpl(ctx, e.client, role.Rules)
+			sbjpl, err := rule2sbjpl(role.Rules)
 
 			if err != nil {
 				return nil, err
@@ -77,7 +73,7 @@ func (e *PolicyExplorer) NamespacedSbjRoles(ctx context.Context, sbj *rbacv1.Sub
 				return nil, err
 			}
 
-			sbjpl, err := rule2sbjpl(ctx, e.client, role.Rules)
+			sbjpl, err := rule2sbjpl(role.Rules)
 
 			if err != nil {
 				return nil, err
@@ -110,7 +106,7 @@ func (e *PolicyExplorer) ClusterSbjRoles(ctx context.Context, sbj *rbacv1.Subjec
 		if err != nil {
 			return nil, err
 		}
-		sbjpl, err := rule2sbjpl(ctx, e.client, role.Rules)
+		sbjpl, err := rule2sbjpl(role.Rules)
 		if err != nil {
 			return nil, err
 		}
@@ -127,27 +123,13 @@ func (e *PolicyExplorer) ClusterSbjRoles(ctx context.Context, sbj *rbacv1.Subjec
 	return sbjrs, nil
 }
 
-func rule2sbjpl(ctx context.Context, client *kubernetes.Clientset, rules []rbacv1.PolicyRule) (*SubjectPolicyList, error) {
+func rule2sbjpl(rules []rbacv1.PolicyRule) (*SubjectPolicyList, error) {
 	sbjpl := &SubjectPolicyList{
 		APIPolicies: []*ResourceAPIPolicy{},
-		PSPs:        []*policyv1beta1.PodSecurityPolicy{},
 	}
 	rapipMap := make(map[string]*ResourceAPIPolicy)
 
 	for _, rule := range rules {
-		// Set Pod-Security-Policy
-		if len(rule.Resources) == 1 && rule.Resources[0] == psp {
-			for _, name := range rule.ResourceNames {
-				psp, err := client.PolicyV1beta1().PodSecurityPolicies().
-					Get(ctx, name, metav1.GetOptions{})
-				if err != nil {
-					return nil, err
-				}
-				sbjpl.PSPs = append(sbjpl.PSPs, psp)
-			}
-			continue
-		}
-
 		// Set API policies
 		ress := rule2res(&rule)
 		for _, res := range ress {
