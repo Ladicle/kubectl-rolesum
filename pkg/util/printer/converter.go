@@ -5,8 +5,6 @@ import (
 	"strings"
 
 	aurora "github.com/logrusorgru/aurora/v3"
-	v1 "k8s.io/api/core/v1"
-	"k8s.io/api/policy/v1beta1"
 
 	"github.com/Ladicle/kubectl-rolesum/pkg/explorer"
 )
@@ -65,34 +63,11 @@ func apiVerb2CheckTable(flag uint) string {
 		mark(flag&explorer.VerbDeletionC == explorer.VerbDeletionC))
 }
 
-func colorBool(flag bool) string {
-	if flag {
-		return aurora.Green("True").String()
-	}
-	return aurora.Red("False").String()
-}
-
 func mark(flag bool) aurora.Value {
 	if flag {
 		return aurora.Green(uCheck2)
 	}
 	return aurora.Red(uNG2)
-}
-
-func joinCap(caps []v1.Capability) string {
-	var scaps []string
-	for _, cap := range caps {
-		scaps = append(scaps, string(cap))
-	}
-	return join(scaps)
-}
-
-func joinFsType(fsts []v1beta1.FSType) string {
-	var sfsts []string
-	for _, fstype := range fsts {
-		sfsts = append(sfsts, string(fstype))
-	}
-	return join(sfsts)
 }
 
 func tabHead(header string) string {

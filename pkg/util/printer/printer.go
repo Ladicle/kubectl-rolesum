@@ -8,7 +8,6 @@ import (
 	aurora "github.com/logrusorgru/aurora/v3"
 	"github.com/olekukonko/tablewriter"
 	core "k8s.io/api/core/v1"
-	policy "k8s.io/api/policy/v1beta1"
 	rbac "k8s.io/api/rbac/v1"
 
 	"github.com/Ladicle/kubectl-rolesum/pkg/explorer"
@@ -64,11 +63,6 @@ func (p *PrettyPrinter) PrintPolicies(sbjrs []*explorer.SubjectRole) {
 		if len(r.PolicyList.APIPolicies) != 0 {
 			p.printAPIPolicy(r.PolicyList.APIPolicies)
 		}
-
-		p.BlankLine()
-		if len(r.PolicyList.PSPs) != 0 {
-			p.printPSP(r.PolicyList.PSPs)
-		}
 	}
 }
 
@@ -101,47 +95,6 @@ func (p *PrettyPrinter) printAPIPolicy(apips []*explorer.ResourceAPIPolicy) {
 	}
 }
 
-func (p *PrettyPrinter) printPSP(psps []*policy.PodSecurityPolicy) {
-	tw := p.newTabwriter()
-	defer tw.Render()
-
-	tw.Append([]string{
-		tabHead("Name"),
-		tabHead("PRIV"),
-		tabHead("RO-RootFS"),
-		tabHead("Volumes"),
-		tabHead("Caps"),
-		tabHead("SELinux"),
-		tabHead("RunAsUser"),
-		tabHead("FSgroup"),
-		tabHead("SUPgroup")})
-
-	tw.SetColumnAlignment([]int{
-		tablewriter.ALIGN_LEFT,
-		tablewriter.ALIGN_CENTER,
-		tablewriter.ALIGN_CENTER,
-		tablewriter.ALIGN_CENTER,
-		tablewriter.ALIGN_CENTER,
-		tablewriter.ALIGN_CENTER,
-		tablewriter.ALIGN_CENTER,
-		tablewriter.ALIGN_CENTER,
-		tablewriter.ALIGN_CENTER})
-
-	for _, policy := range psps {
-		tw.Append([]string{
-			policy.Name,
-			colorBool(*policy.Spec.AllowPrivilegeEscalation),
-			colorBool(policy.Spec.ReadOnlyRootFilesystem),
-			joinFsType(policy.Spec.Volumes),
-			joinCap(policy.Spec.AllowedCapabilities),
-			string(policy.Spec.SELinux.Rule),
-			string(policy.Spec.RunAsUser.Rule),
-			string(policy.Spec.FSGroup.Rule),
-			string(policy.Spec.SupplementalGroups.Rule),
-		})
-	}
-}
-
 func (p *PrettyPrinter) BlankLine() {
 	fmt.Fprintln(p.out)
 }
@@ -160,8 +113,4 @@ func (p *PrettyPrinter) newTabwriter() *tablewriter.Table {
 
 func (p *PrettyPrinter) PrintHeader(header string) {
 	fmt.Fprintln(p.out, aurora.BrightCyan(header+":"))
-}
-
-func (p *PrettyPrinter) printHeaderL2(header string) {
-	fmt.Fprintln(p.out, aurora.BrightCyan("  "+header+":"))
 }
