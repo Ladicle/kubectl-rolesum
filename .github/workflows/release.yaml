@@ -24,10 +24,10 @@ jobs:
         echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
     - uses: actions/create-github-app-token@v1
       id: app-token
-        with:
-          app-id: ${{ secrets.APP_ID }}
-          private-key: ${{ secrets.CLIENT_ID }}
-          repositorys: homebrew-kubectl-bindrole
+      with:
+        app-id: ${{ secrets.APP_ID }}
+        private-key: ${{ secrets.CLIENT_ID }}
+        repositorys: homebrew-kubectl-bindrole
     - name: GoReleaser
       uses: goreleaser/goreleaser-action@v2
       with:
