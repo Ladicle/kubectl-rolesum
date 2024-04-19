@@ -22,6 +22,12 @@ jobs:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
         echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+    - uses: actions/create-github-app-token@v1
+      id: app-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.CLIENT_ID }}
+          repositorys: homebrew-kubectl-bindrole
     - name: GoReleaser
       uses: goreleaser/goreleaser-action@v2
       with:
@@ -29,7 +35,7 @@ jobs:
         version: latest
         args: release --rm-dist
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
         HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
     - name: Update new version in krew-index
       uses: rajatjindal/krew-release-bot@v0.0.38
